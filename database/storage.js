@@ -64,3 +64,8 @@ class Storage {
 }
 
 module.exports = Storage;
+
+/* 
+  database/storage.js : Le fichier qui définit la classe Storage, 
+  qui est responsable de la gestion des données stockées de manière permanente.
+*/

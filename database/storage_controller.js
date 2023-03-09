@@ -36,3 +36,11 @@ class DbController {
 }
 
 module.exports = DbController;
+
+/* 
+
+database/storage_controller.js : Le fichier qui définit la classe StorageController, 
+qui est responsable de la gestion de la persistance des données stockées et de la récupération 
+des données stockées en cas de redémarrage de l'application.
+
+*/

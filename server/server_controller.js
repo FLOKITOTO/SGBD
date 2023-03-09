@@ -163,6 +163,14 @@ class ServerController {
 
 module.exports = ServerController;
 
+/* 
+
+server/server_controller.js : Le fichier qui définit la classe ServerController, 
+qui est responsable de la gestion des demandes entrantes pour le serveur, 
+telles que l'ajout de données, la récupération de données et la suppression de données.
+
+*/
+
 // const { parse } = require('url');
 // const { addData, getData, updateData, deleteData } = require('./database/db_controller');
 

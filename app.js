@@ -27,3 +27,9 @@ const server = http.createServer((request, response) => {
 server.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
+/* 
+
+app.js : Le point d'entrée de l'application. 
+Il initialise le serveur et les différents contrôleurs de la base de données et de stockage, et les relie entre eux.
+
+*/
