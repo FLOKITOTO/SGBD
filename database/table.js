@@ -28,9 +28,8 @@ class Table {
 }
 
 module.exports = Table;
-/* 
 
+/* 
 database/table.js : Le fichier qui définit la classe Table, 
 qui est responsable de la gestion des tables de données pour chaque base de données.
-
 */
