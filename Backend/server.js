@@ -171,6 +171,38 @@ const server = http.createServer((req, res) => {
       res.end("Data does not exist");
     }
   }
+
+  // Gestion de l'ajout ou de la mise à jour d'une donnée par son id
+  else if (req.method === "PUT" && databaseName && tableName && id) {
+    let body = "";
+
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on("end", () => {
+      let data;
+
+      try {
+        data = JSON.parse(body);
+      } catch (error) {
+        res.writeHead(400);
+        res.end("Invalid JSON");
+        return;
+      }
+
+      if (!databases[databaseName][tableName]) {
+        res.writeHead(400);
+        res.end("Table does not exist");
+        return;
+      }
+
+      databases[databaseName][tableName][id] = data;
+      saveDatabases();
+      res.writeHead(200);
+      res.end("Data saved successfully");
+    });
+  }
 });
 
 // Démarrage du serveur HTTP
