@@ -219,6 +219,12 @@ const server = http.createServer((req, res) => {
       res.end("Data does not exist");
     }
   }
+
+  // Gestion de toutes les autres requêtes
+  else {
+    res.writeHead(404);
+    res.end("Endpoint not found");
+  }
 });
 
 // Démarrage du serveur HTTP
