@@ -1,80 +1,81 @@
-1. Lorsque l'application est lancée, `app.js` est exécuté en premier. Il initialise le serveur et les différents contrôleurs pour la base de données et le stockage.
-2. La classe `ServerController` définit les points de terminaison de l'API RESTful que le serveur expose pour les demandes entrantes.
-3. La classe `DbController` définit les méthodes pour interagir avec la base de données en mémoire. Il est utilisé pour stocker, récupérer et supprimer des données à partir de la base de données.
-4. La classe `StorageController` définit les méthodes pour stocker des données de manière asynchrone et les récupérer lorsque l'application est redémarrée.
-5. Lorsque le serveur reçoit une demande entrante pour l'une des routes définies dans `ServerController`, la méthode correspondante dans `DbController` est appelée pour traiter la demande.
-6. Si la demande entraîne une modification des données, `StorageController` est utilisé pour stocker les modifications de manière asynchrone, afin de garantir la persistance des données.
-7. Lorsque l'application est redémarrée, `StorageController` récupère les données stockées pour les réinjecter dans la base de données en mémoire. Ainsi, les données ne sont pas perdues en cas de redémarrage de l'application.
 
-```sql
-                          API RESTful Server
-                       +-------------------+
-                       |                   |
-                       |    Node.js sans   |
-                       |      framework    |
-                       |                   |
-                       |     Port: 3000    |
-                       |                   |
-                       +---------+---------+
-                                 |
-                                 |
-                                 |   Requests
-                                 |
-                                 |
-                       +---------+---------+
-                       |                   |
-                       |    DB Controller  |
-                       |                   |
-                       +---------+---------+
-                                 |
-                                 |
-                                 |   Memory Data
-                                 |
-                                 |
-                       +---------+---------+
-                       |                   |
-                       |    Memory Tables  |
-                       |                   |
-                       +---------+---------+
-                                 |
-                                 |
-                                 |   Asynchronous Data
-                                 |
-                                 |
-                       +---------+---------+
-                       |                   |
-                       |  Storage Controller|
-                       |                   |
-                       +-------------------+
+Simple database system (SGBD) in Nodejs with IN MEMORY databases and asynchronous perennial storage, data should not be lost in case of shutdown.
 
-                            User Interface
-                       +-------------------+
-                       |                   |
-                       |     Node.js       |
-                       |                   |
-                       |     Port: 3001    |
-                       |                   |
-                       +-------------------+
-```
+The system must be restfull.
 
-autre :
+All interactions with the database are done via web service calls with curl commands.
 
-```sql
-     +-------------+         +----------------+       +-------------------+
-     |             |         |                |       |                   |
-     |  Client     |         |    Serveur     |       |  Stockage         |
-     |             |         |                |       |                   |
-     +-------------+         +----------------+       +-------------------+
-           |                          |                           |
-           |  HTTP POST/GET           |                           |
-           +------------------------>   REST API               	  |
-           |                          |                           |
-           |                          |                           |
-           |  HTTP POST/GET           |                           |
-           +------------------------>   Base de données           |
-                                      |   en mémoire              |
-                                      |                           |
-                                      |  Stockage asynchrone      |
-                                      +-------------------------->  Fichier JSON
+Node Js without any framework, I'm not allowed to use any framework like express or other.
 
+
+List of all curl commands including all of the CRUD.
+
+
+```json
+const validEndpoints = [
+    {
+      title: "CREATE a BASE ⚡",
+      term: "curl -X `method` `url`",
+      method: "POST",
+      url: "http://localhost:3000/:databaseName",
+    },
+    {
+      title: "CREATE a TABLE ⚡",
+      term: "curl -X `method` `url`",
+      method: "POST",
+      url: "http://localhost:3000/:databaseName/:tableName",
+    },
+    {
+      title: "INSERT DATA in a TABLE ⚡",
+      term: "curl -X `method` -H `contentType` -d `bodyRequest` `url`",
+      contentType: "Content-Type: application/json",
+      bodyRequest: '\'{"id": x, "name": "x"}\'',
+      method: "POST",
+      url: "http://localhost:3000/:databaseName/:tableName",
+    },
+    {
+      title: "GET DATA from TABLE 👀",
+      term: "curl -X `method` `url`",
+      method: "GET",
+      url: "http://localhost:3000/:databaseName/:tableName",
+    },
+    {
+      title: "GET DATA from ONE FIELD by ID 👀",
+      term: "curl -X `method` `url`",
+      method: "GET",
+      url: "http://localhost:3000/:databaseName/:tableName:/:id",
+    },
+    {
+      title: "UPDATE DATA from ONE FIELD by ID ✅",
+      term: "curl -X `method` -H `contentType` -d `bodyRequest` `url`",
+      contentType: "Content-Type: application/json",
+      bodyRequest: '\'{"id": x, "name": "x"}\'',
+      method: "PUT",
+      url: "http://localhost:3000/:databaseName/:tableName:/:id",
+    },
+    {
+      title: "DELETE ONE FIELD by ID ❌",
+      term: "curl -X `method` `url`",
+      method: "DELETE",
+      url: "http://localhost:3000/:databaseName/:tableName:/:id",
+    },
+    {
+      title: "DELETE TABLE in DATABASE ❌",
+      term: "curl -X `method` `url`",
+      method: "DELETE",
+      url: "http://localhost:3000/:databaseName/:tableName:",
+    },
+    {
+      title: "DELETE DATABASE ❌",
+      term: "curl -X `method` `url`",
+      method: "DELETE",
+      url: "http://localhost:3000/:databaseName",
+    },
+    {
+      title: "See all commands 👀",
+      term: "curl -X `method` `url`",
+      method: "GET",
+      url: "http://localhost:3000/help",
+    },
+  ];
 ```
