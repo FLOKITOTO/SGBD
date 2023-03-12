@@ -94,6 +94,32 @@ const server = http.createServer((req, res) => {
       "This command does not exist. Type /help for a list of available commands."
     );
   }
+
+  // Gestion de la création d'une base de données
+  if (req.method === "POST" && databaseName && !tableName && !id) {
+    if (!databases[databaseName]) {
+      databases[databaseName] = {};
+      saveDatabases();
+      res.writeHead(201);
+      res.end("Database created successfully");
+    } else {
+      res.writeHead(400);
+      res.end("Database already exists");
+    }
+  }
+
+  // Gestion de la suppression d'une base de données
+  else if (req.method === "DELETE" && databaseName && !tableName && !id) {
+    if (databases[databaseName]) {
+      delete databases[databaseName];
+      saveDatabases();
+      res.writeHead(200);
+      res.end("Database deleted successfully");
+    } else {
+      res.writeHead(400);
+      res.end("Database does not exist");
+    }
+  }
 });
 
 // Démarrage du serveur HTTP
