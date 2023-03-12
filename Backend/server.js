@@ -146,6 +146,31 @@ const server = http.createServer((req, res) => {
       res.end("Table does not exist");
     }
   }
+
+  // Gestion de la récupération de toutes les données d'une table
+  else if (req.method === "GET" && databaseName && tableName && !id) {
+    if (databases[databaseName][tableName]) {
+      res.writeHead(200);
+      res.end(JSON.stringify(databases[databaseName][tableName]));
+    } else {
+      res.writeHead(400);
+      res.end("Table does not exist");
+    }
+  }
+
+  // Gestion de la récupération d'une donnée par son id
+  else if (req.method === "GET" && databaseName && tableName && id) {
+    if (
+      databases[databaseName][tableName] &&
+      databases[databaseName][tableName][id]
+    ) {
+      res.writeHead(200);
+      res.end(JSON.stringify(databases[databaseName][tableName][id]));
+    } else {
+      res.writeHead(400);
+      res.end("Data does not exist");
+    }
+  }
 });
 
 // Démarrage du serveur HTTP
