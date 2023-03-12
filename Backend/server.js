@@ -120,6 +120,32 @@ const server = http.createServer((req, res) => {
       res.end("Database does not exist");
     }
   }
+
+  // Gestion de la création d'une table dans une base de données
+  else if (req.method === "POST" && databaseName && tableName && !id) {
+    if (!databases[databaseName][tableName]) {
+      databases[databaseName][tableName] = {};
+      saveDatabases();
+      res.writeHead(201);
+      res.end("Table created successfully");
+    } else {
+      res.writeHead(400);
+      res.end("Table already exists");
+    }
+  }
+
+  // Gestion de la suppression d'une table dans une base de données
+  else if (req.method === "DELETE" && databaseName && tableName && !id) {
+    if (databases[databaseName][tableName]) {
+      delete databases[databaseName][tableName];
+      saveDatabases();
+      res.writeHead(200);
+      res.end("Table deleted successfully");
+    } else {
+      res.writeHead(400);
+      res.end("Table does not exist");
+    }
+  }
 });
 
 // Démarrage du serveur HTTP
