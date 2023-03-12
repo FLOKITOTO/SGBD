@@ -203,6 +203,22 @@ const server = http.createServer((req, res) => {
       res.end("Data saved successfully");
     });
   }
+
+  // Gestion de la suppression d'une donnée par son id
+  else if (req.method === "DELETE" && databaseName && tableName && id) {
+    if (
+      databases[databaseName][tableName] &&
+      databases[databaseName][tableName][id]
+    ) {
+      delete databases[databaseName][tableName][id];
+      saveDatabases();
+      res.writeHead(200);
+      res.end("Data deleted successfully");
+    } else {
+      res.writeHead(400);
+      res.end("Data does not exist");
+    }
+  }
 });
 
 // Démarrage du serveur HTTP
