@@ -251,6 +251,8 @@ DELETE /databases/:database_name/:table_name?colonne1=valeur1
 
 ## Exemples-dutilisations
 
+Je vais mettre un gif ici
+
 ![aperçu](preview.gif)
 
 [Sommaire](#sommaire)
