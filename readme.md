@@ -60,7 +60,7 @@ La racine est le point d'entré principal avec comme propositions /databases & /
 ### AIDE
 
 ```
-/help
+/docs
 ```
 
 `GET` **Accéder aux commandes curls**
@@ -107,6 +107,14 @@ Réponses :
 - `400 Bad Request` : Le corps de la requête est mal formé ou des paramètres obligatoires sont manquants.
 
 Cette commande permet de créer une base de données, avec un corps de requête `name`.
+
+---
+
+### Afficher la backup databases.json
+
+```
+/databases/all
+```
 
 ---
 
