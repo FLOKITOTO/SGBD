@@ -5,6 +5,50 @@ const fs = require("fs");
 let databases = {};
 
 const server = http.createServer((req, res) => {
+  if (req.url === "/docs") {
+    // Documentation API
+    const doc = `
+
+      \x1b[\x1b[1m\x1b[31mPour plus d'informations, consultez la page [GITHUB_FLOKITOTO]\x1b[31m\x1b[1m  \x1b[32m[1m (https://github.com/FLOKITOTO)\x1b[32m\x1b[0m
+
+      \x1b[1mDocumentation API in console\x1b[0m
+      
+      \x1b[36mGET /databases\x1b[0m
+      Liste toutes les bases de données
+      
+      \x1b[36mPOST /databases\x1b[0m
+      Crée une nouvelle base de données
+      \x1b[33mCorps de la requête:\x1b[0m { "name": "nom_de_la_base_de_données" }
+      
+      \x1b[36mGET /databases/:database_name\x1b[0m
+      Liste toutes les tables de la base de données :database_name
+      
+      \x1b[36mPOST /databases/:database_name\x1b[0m
+      Crée une nouvelle table dans la base de données :database_name
+      \x1b[33mCorps de la requête:\x1b[0m { "name": "nom_de_la_table" }
+      
+      \x1b[36mGET /databases/:database_name/:table_name\x1b[0m
+      Liste tous les enregistrements de la table :table_name de la base de données :database_name
+      
+      \x1b[36mPOST /databases/:database_name/:table_name\x1b[0m
+      Crée un nouvel enregistrement dans la table :table_name de la base de données :database_name
+      \x1b[33mCorps de la requête:\x1b[0m { "field1": "valeur1", "field2": "valeur2", ... }
+      
+      \x1b[36mGET /databases/:database_name/:table_name/:id\x1b[0m
+      Récupère l'enregistrement d'ID :id dans la table :table_name de la base de données :database_name
+      
+      \x1b[36mPUT /databases/:database_name/:table_name/:id\x1b[0m
+      Met à jour l'enregistrement d'ID :id dans la table :table_name de la base de données :database_name
+      \x1b[33mCorps de la requête:\x1b[0m { "field1": "nouvelle_valeur1", "field2": "nouvelle_valeur2", ... }
+      
+      \x1b[36mDELETE /databases/:database_name/:table_name/:id\x1b[0m
+      Supprime l'enregistrement d'ID :id dans la table :table_name de la base de données :database_name
+    `;
+
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end(doc);
+  }
+
   if (req.url === "/") {
     // ROOT du projet
     res.writeHead(200, { "Content-Type": "text/plain" });
@@ -33,6 +77,12 @@ const server = http.createServer((req, res) => {
           })
         );
       });
+    }
+  } else if (req.url === "/databases/all") {
+    // GET /databases/all
+    if (req.method === "GET") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(databases));
     }
   } else if (req.url.startsWith("/databases/")) {
     // Handle requests for specific databases
