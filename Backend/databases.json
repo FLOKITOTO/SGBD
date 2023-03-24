@@ -1,7 +1,1 @@
-<<<<<<< HEAD
-{
-	"cc": {}
-}
-=======
 {"db1":{},"db2":{},"db3":{"tb3":[{"colonne1":"hh","colonne2":"valeur2","colonne3":"valeur3","id":1}]}}
->>>>>>> dev
