@@ -11,7 +11,7 @@ Voici l'organisation des données en base avec des tables et les différents PAT
    - [Dépendances](#dépendances)
 3. [Utilisations](#utilisations)
 4. [Exemples d&#39;utilisations](#exemples-dutilisations)
-5. [Licence](#licence)
+5. [Licence](#LICENCE)
 
 ---
 
@@ -265,7 +265,7 @@ Je vais mettre un gif ici
 
 ## Licence
 
-Code sous license [GPL v3](LICENSE)
+Code sous license [GPL v3](LICENCE)
 
 ## Authors
 
