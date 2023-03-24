@@ -38,7 +38,7 @@ L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éx
 - [fs](https://nodejs.org/api/fs.html),
 - [http](https://nodejs.org/api/http.html),
 
-## [Sommaire](#sommaire)
+[Sommaire](#sommaire)
 
 ## Utilisations
 
