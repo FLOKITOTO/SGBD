@@ -98,7 +98,6 @@ _BODY REQUEST :_
 
 ```
 {
-  "id": ":database_id"
   "name": ":database_name"
 }
 ```
