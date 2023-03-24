@@ -10,9 +10,7 @@ Voici l'organisation des données en base avec des tables et les différents PAT
 2. [Pré-requis](#pré-requis)
    - [Dépendances](#dépendances)
 3. [Utilisations](#utilisations)
-
 4. [Exemples d&#39;utilisations](#exemples-dutilisations)
-
 5. [Licence](#licence)
 
 ---
@@ -27,7 +25,7 @@ Démarrez votre environnement visual studio code, un premier terminal et accéde
 
 ## Pré-requis
 
-L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éxécution du script
+L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éxécution du script.
 
 [Sommaire](#sommaire)
 
