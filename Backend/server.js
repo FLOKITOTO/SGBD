@@ -5,6 +5,10 @@ const fs = require("fs");
 let databases = {};
 
 const server = http.createServer((req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   if (req.url === "/docs") {
     // Documentation API
     const doc = `
@@ -158,6 +162,7 @@ const server = http.createServer((req, res) => {
                 const row = JSON.parse(body);
                 const table = databases[databaseName][tableName];
                 const id = table.length + 1;
+                // id random avec uuid ou autre
                 row.id = id;
                 table.push(row);
                 saveDatabases();
@@ -306,6 +311,16 @@ function saveDatabases() {
   } catch (err) {
     console.error(`Error saving databases: ${err}`);
   }
+}
+
+function addCorsHeaders(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
 }
 
 // Démarrage du serveur HTTP
