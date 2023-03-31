@@ -130,6 +130,41 @@ const server = http.createServer((req, res) => {
             );
           });
         }
+      } else if (urlParts.length === 4 && urlParts[3].indexOf("?") !== -1) {
+        const [tableName, queryString] = urlParts[3].split("?");
+        const queries = queryString.split("&").map((query) => query.split("="));
+        if (databases[databaseName][tableName]) {
+          if (req.method === "GET") {
+            // GET /databases/:database_name/:table_name?field1=value1&field2=value2
+            // Filtrer des données d'une table selon des critères
+            const table = databases[databaseName][tableName];
+            let filteredTable = [...table];
+            queries.forEach((query) => {
+              const [field, value] = query;
+              filteredTable = filteredTable.filter(
+                (obj) => obj[field] == value
+              );
+            });
+            const fields = Object.keys(filteredTable[0]).join(", ");
+            const data = filteredTable.map((obj) => Object.values(obj));
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                table_name: tableName,
+                fields: fields,
+                data: data,
+              })
+            );
+          } else {
+            // Méthode HTTP non autorisée
+            res.writeHead(405, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Method not allowed" }));
+          }
+        } else {
+          // La table demandée n'existe pas dans la base de données
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Table not found" }));
+        }
       } else if (urlParts.length === 4) {
         const tableName = urlParts[3];
         if (databases[databaseName][tableName]) {
@@ -150,7 +185,7 @@ const server = http.createServer((req, res) => {
                 data: data,
               })
             );
-          } /*ici */ else if (req.method === "POST") {
+          } else if (req.method === "POST") {
             // POST /databases/:database_name/:table_name
             // Insertion de données dans une table
             let body = "";
@@ -303,6 +338,7 @@ function loadDatabases() {
   }
 }
 
+// REVOIR LA SAUVEGARDE POUR FRAGMENTER LE DATABASES.JSON
 // Save databases to file
 function saveDatabases() {
   try {
@@ -313,19 +349,14 @@ function saveDatabases() {
   }
 }
 
-function addCorsHeaders(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-}
-
 // Démarrage du serveur HTTP
 const port = 3000;
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
   loadDatabases();
 });
+
+// filtre de recherche
+// exceptions
+// sauvegarde partitionnée
+// interface clique bouton
