@@ -10,10 +10,8 @@ Voici l'organisation des données en base avec des tables et les différents PAT
 2. [Pré-requis](#pré-requis)
    - [Dépendances](#dépendances)
 3. [Utilisations](#utilisations)
-
 4. [Exemples d&#39;utilisations](#exemples-dutilisations)
-
-5. [Licence](#licence)
+5. [Licence](#LICENCE)
 
 ---
 
@@ -27,7 +25,7 @@ Démarrez votre environnement visual studio code, un premier terminal et accéde
 
 ## Pré-requis
 
-L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éxécution du script
+L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éxécution du script.
 
 [Sommaire](#sommaire)
 
@@ -38,7 +36,7 @@ L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éx
 - [fs](https://nodejs.org/api/fs.html),
 - [http](https://nodejs.org/api/http.html),
 
-## [Sommaire](#sommaire)
+[Sommaire](#sommaire)
 
 ## Utilisations
 
@@ -62,7 +60,7 @@ La racine est le point d'entré principal avec comme propositions /databases & /
 ### AIDE
 
 ```
-/help
+/docs
 ```
 
 `GET` **Accéder aux commandes curls**
@@ -98,7 +96,6 @@ _BODY REQUEST :_
 
 ```
 {
-  "id": ":database_id"
   "name": ":database_name"
 }
 ```
@@ -110,6 +107,14 @@ Réponses :
 - `400 Bad Request` : Le corps de la requête est mal formé ou des paramètres obligatoires sont manquants.
 
 Cette commande permet de créer une base de données, avec un corps de requête `name`.
+
+---
+
+### Afficher la backup databases.json
+
+```
+/databases/all
+```
 
 ---
 
@@ -208,7 +213,7 @@ Cette commande permet d'insérer des données dans une table.
 /databases/:database_name/:table_name/:id
 ```
 
-`PUT` Mettre à jour une donnée
+`PUT` **Mettre à jour une donnée**
 
 ```
 {
@@ -239,18 +244,26 @@ Cette commande permet de supprimer une donnée via une table
 
 ---
 
-// pas encore fait
+`GET` **Filtrer tous les champs d'une table**
 
-Supprimer plusieurs données
+Réponses:
 
-```
-DELETE /databases/:database_name/:table_name?colonne1=valeur1
+/databases/:database_name/:table_name?{filter_parameter}=value&{filter_parameter}=value&{filter_parameter}=value
 
-```
+Parameters :
+\*\*\_gt** : Greater than
+\*\*\_gte** : Greater than or equal to
+\*\*\_lt** : Less than
+\*\*\_lte** : Less than or equal TO
 
-[Sommaire](#sommaire)
+To write equal : field=value
+exemple : age=21
+
+## [Sommaire](#sommaire)
 
 ## Exemples-dutilisations
+
+Je vais mettre un gif ici
 
 ![aperçu](preview.gif)
 
@@ -258,7 +271,7 @@ DELETE /databases/:database_name/:table_name?colonne1=valeur1
 
 ## Licence
 
-Code sous license [GPL v3](LICENSE)
+Code sous license [GPL v3](LICENCE)
 
 ## Authors
 
