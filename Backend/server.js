@@ -135,15 +135,41 @@ const server = http.createServer((req, res) => {
         const queries = queryString.split("&").map((query) => query.split("="));
         if (databases[databaseName][tableName]) {
           if (req.method === "GET") {
-            // GET /databases/:database_name/:table_name?field1=value1&field2=value2
+            // GET /databases/:database_name/:table_name?field1=value1&field2=value2&field3__lt=value3&field4__lte=value4&field5__gt=value5&field6__gte=value6
             // Filtrer des données d'une table selon des critères
             const table = databases[databaseName][tableName];
             let filteredTable = [...table];
             queries.forEach((query) => {
               const [field, value] = query;
-              filteredTable = filteredTable.filter(
-                (obj) => obj[field] == value
-              );
+              if (field.endsWith("_lt")) {
+                // filtrer les valeurs inférieures à la valeur donnée
+                const fieldName = field.replace("_lt", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] < value
+                );
+              } else if (field.endsWith("_lte")) {
+                // filtrer les valeurs inférieures ou égales à la valeur donnée
+                const fieldName = field.replace("_lte", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] <= value
+                );
+              } else if (field.endsWith("_gt")) {
+                // filtrer les valeurs supérieures à la valeur donnée
+                const fieldName = field.replace("_gt", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] > value
+                );
+              } else if (field.endsWith("_gte")) {
+                // filtrer les valeurs supérieures ou égales à la valeur donnée
+                const fieldName = field.replace("_gte", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] >= value
+                );
+              } else {
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[field] == value
+                );
+              }
             });
             const fields = Object.keys(filteredTable[0]).join(", ");
             const data = filteredTable.map((obj) => Object.values(obj));

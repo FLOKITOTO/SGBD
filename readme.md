@@ -213,7 +213,7 @@ Cette commande permet d'insérer des données dans une table.
 /databases/:database_name/:table_name/:id
 ```
 
-`PUT` Mettre à jour une donnée
+`PUT` **Mettre à jour une donnée**
 
 ```
 {
@@ -244,16 +244,22 @@ Cette commande permet de supprimer une donnée via une table
 
 ---
 
-// pas encore fait
+`GET` **Filtrer tous les champs d'une table**
 
-Supprimer plusieurs données
+Réponses:
 
-```
-DELETE /databases/:database_name/:table_name?colonne1=valeur1
+/databases/:database_name/:table_name?{filter_parameter}=value&{filter_parameter}=value&{filter_parameter}=value
 
-```
+Parameters :
+\*\*\_gt** : Greater than
+\*\*\_gte** : Greater than or equal to
+\*\*\_lt** : Less than
+\*\*\_lte** : Less than or equal TO
 
-[Sommaire](#sommaire)
+To write equal : field=value
+exemple : age=21
+
+## [Sommaire](#sommaire)
 
 ## Exemples-dutilisations
 
