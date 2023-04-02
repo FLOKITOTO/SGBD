@@ -5,6 +5,10 @@ const fs = require("fs");
 let databases = {};
 
 const server = http.createServer((req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   if (req.url === "/docs") {
     // Documentation API
     const doc = `
@@ -126,6 +130,67 @@ const server = http.createServer((req, res) => {
             );
           });
         }
+      } else if (urlParts.length === 4 && urlParts[3].indexOf("?") !== -1) {
+        const [tableName, queryString] = urlParts[3].split("?");
+        const queries = queryString.split("&").map((query) => query.split("="));
+        if (databases[databaseName][tableName]) {
+          if (req.method === "GET") {
+            // GET /databases/:database_name/:table_name?field1=value1&field2=value2&field3__lt=value3&field4__lte=value4&field5__gt=value5&field6__gte=value6
+            // Filtrer des données d'une table selon des critères
+            const table = databases[databaseName][tableName];
+            let filteredTable = [...table];
+            queries.forEach((query) => {
+              const [field, value] = query;
+              if (field.endsWith("_lt")) {
+                // filtrer les valeurs inférieures à la valeur donnée
+                const fieldName = field.replace("_lt", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] < value
+                );
+              } else if (field.endsWith("_lte")) {
+                // filtrer les valeurs inférieures ou égales à la valeur donnée
+                const fieldName = field.replace("_lte", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] <= value
+                );
+              } else if (field.endsWith("_gt")) {
+                // filtrer les valeurs supérieures à la valeur donnée
+                const fieldName = field.replace("_gt", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] > value
+                );
+              } else if (field.endsWith("_gte")) {
+                // filtrer les valeurs supérieures ou égales à la valeur donnée
+                const fieldName = field.replace("_gte", "");
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[fieldName] >= value
+                );
+              } else {
+                filteredTable = filteredTable.filter(
+                  (obj) => obj[field] == value
+                );
+              }
+            });
+            const fields = Object.keys(filteredTable[0]).join(", ");
+            const data = filteredTable.map((obj) => Object.values(obj));
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                table_name: tableName,
+                fields: fields,
+                data: data,
+              })
+            );
+          } else {
+            // Méthode HTTP non autorisée
+            res.writeHead(405, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Method not allowed" }));
+          }
+        } else {
+          // La table demandée n'existe pas dans la base de données
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Table not found" }));
+        }
       } else if (urlParts.length === 4) {
         const tableName = urlParts[3];
         if (databases[databaseName][tableName]) {
@@ -146,7 +211,7 @@ const server = http.createServer((req, res) => {
                 data: data,
               })
             );
-          } /*ici */ else if (req.method === "POST") {
+          } else if (req.method === "POST") {
             // POST /databases/:database_name/:table_name
             // Insertion de données dans une table
             let body = "";
@@ -158,6 +223,7 @@ const server = http.createServer((req, res) => {
                 const row = JSON.parse(body);
                 const table = databases[databaseName][tableName];
                 const id = table.length + 1;
+                // id random avec uuid ou autre
                 row.id = id;
                 table.push(row);
                 saveDatabases();
@@ -298,6 +364,7 @@ function loadDatabases() {
   }
 }
 
+// REVOIR LA SAUVEGARDE POUR FRAGMENTER LE DATABASES.JSON
 // Save databases to file
 function saveDatabases() {
   try {
@@ -314,3 +381,8 @@ server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
   loadDatabases();
 });
+
+// filtre de recherche
+// exceptions
+// sauvegarde partitionnée
+// interface clique bouton
