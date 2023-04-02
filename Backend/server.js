@@ -1,5 +1,6 @@
 const http = require("http");
 const fs = require("fs");
+const crypto = require("crypto");
 
 // Load databases from JSON file
 let databases = {};
@@ -222,8 +223,8 @@ const server = http.createServer((req, res) => {
               try {
                 const row = JSON.parse(body);
                 const table = databases[databaseName][tableName];
-                const id = table.length + 1;
-                // id random avec uuid ou autre
+                const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+
                 row.id = id;
                 table.push(row);
                 saveDatabases();
@@ -382,7 +383,6 @@ server.listen(port, () => {
   loadDatabases();
 });
 
-// filtre de recherche
 // exceptions
+// id
 // sauvegarde partitionnée
-// interface clique bouton
