@@ -262,9 +262,17 @@ const server = http.createServer((req, res) => {
             req.on("end", () => {
               try {
                 const row = JSON.parse(body);
+                if (Object.keys(row).length === 0) {
+                  // Vérifie s'il y a au moins un paramètre dans le JSON body
+                  throw new Error("Missing parameters");
+                }
                 const table = databases[databaseName][tableName];
                 const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
 
+                if (row.hasOwnProperty("id")) {
+                  // Vérifie si le champ "id" est présent dans le JSON
+                  throw new Error("Field 'id' is not allowed");
+                }
                 row.id = id;
                 table.push(row);
                 saveDatabases();
@@ -279,7 +287,7 @@ const server = http.createServer((req, res) => {
                 res.writeHead(400, { "Content-Type": "application/json" });
                 res.end(
                   JSON.stringify({
-                    error: "Invalid JSON payload",
+                    error: error.message,
                   })
                 );
               }
