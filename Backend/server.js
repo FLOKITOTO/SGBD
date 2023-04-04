@@ -72,15 +72,34 @@ const server = http.createServer((req, res) => {
         body += chunk.toString();
       });
       req.on("end", () => {
-        const databaseName = JSON.parse(body).name;
-        databases[databaseName] = {};
-        saveDatabases(databases);
-        res.writeHead(201, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: `Database ${databaseName} created successfully`,
-          })
-        );
+        try {
+          const jsonBody = JSON.parse(body);
+          const bodyKeys = Object.keys(jsonBody);
+          if (bodyKeys.length !== 1 || !bodyKeys.includes("name")) {
+            throw new Error(
+              "Invalid body. Body should only contain a 'name' property"
+            );
+          }
+          const databaseName = jsonBody.name;
+          if (databases[databaseName]) {
+            throw new Error(`Database '${databaseName}' already exists`);
+          }
+          databases[databaseName] = {};
+          saveDatabases(databases);
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: `Database ${databaseName} created successfully`,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              error: error.message,
+            })
+          );
+        }
       });
     }
   } else if (req.url === "/databases/all") {
@@ -120,15 +139,36 @@ const server = http.createServer((req, res) => {
             body += chunk.toString();
           });
           req.on("end", () => {
-            const tableName = JSON.parse(body).name;
-            databases[databaseName][tableName] = [];
-            saveDatabases(databases);
-            res.writeHead(201, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                message: `Table ${tableName} created successfully in ${databaseName}`,
-              })
-            );
+            try {
+              const jsonBody = JSON.parse(body);
+              if (Object.keys(jsonBody).length !== 1 || !jsonBody.name) {
+                throw new Error("Invalid request body");
+              }
+              const tableName = jsonBody.name;
+              if (!databases[databaseName]) {
+                throw new Error(`Database '${databaseName}' does not exist`);
+              }
+              if (databases[databaseName][tableName]) {
+                throw new Error(
+                  `Table '${tableName}' already exists in '${databaseName}'`
+                );
+              }
+              databases[databaseName][tableName] = [];
+              saveDatabases(databases);
+              res.writeHead(201, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: `Table ${tableName} created successfully in ${databaseName}`,
+                })
+              );
+            } catch (error) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  error: error.message,
+                })
+              );
+            }
           });
         }
       } else if (urlParts.length === 4 && urlParts[3].indexOf("?") !== -1) {
@@ -384,5 +424,4 @@ server.listen(port, () => {
 });
 
 // exceptions
-// id
 // sauvegarde partitionnée
