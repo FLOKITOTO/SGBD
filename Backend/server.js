@@ -117,11 +117,17 @@ const server = http.createServer((req, res) => {
     if (databases[databaseName]) {
       if (urlParts.length === 3) {
         if (req.method === "GET") {
-          // GET /databases/:database_name
-          // Listes des tables d'une BDD
-          const tableList = Object.keys(databases[databaseName]);
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify(tableList));
+          const databaseName = req.url.split("/")[2];
+          if (databaseName in databases) {
+            // GET /databases/:database_name
+            // Listes des tables d'une BDD
+            const tableList = Object.keys(databases[databaseName]);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(tableList));
+          } else {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ message: "Database not found" }));
+          }
         } else if (req.method === "DELETE") {
           // DELETE /databases/:database_name
           // Supression d'une BDD
@@ -240,7 +246,7 @@ const server = http.createServer((req, res) => {
         if (databases[databaseName][tableName]) {
           if (req.method === "GET") {
             // GET /databases/:database_name/:table_name
-            // Listes des tables d'une BDD
+            // Listes des données, d'une table, d'une BDD
             const fields = Object.keys(
               databases[databaseName][tableName][0]
             ).join(", ");
