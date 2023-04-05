@@ -11,53 +11,25 @@ const server = http.createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.url === "/docs") {
-    // Documentation API
-    const doc = `
-
-      \x1b[\x1b[1m\x1b[31mPour plus d'informations, consultez la page [GITHUB_FLOKITOTO]\x1b[31m\x1b[1m  \x1b[32m[1m (https://github.com/FLOKITOTO)\x1b[32m\x1b[0m
-
-      \x1b[1mDocumentation API in console\x1b[0m
-      
-      \x1b[36mGET /databases\x1b[0m
-      Liste toutes les bases de données
-      
-      \x1b[36mPOST /databases\x1b[0m
-      Crée une nouvelle base de données
-      \x1b[33mCorps de la requête:\x1b[0m { "name": "nom_de_la_base_de_données" }
-      
-      \x1b[36mGET /databases/:database_name\x1b[0m
-      Liste toutes les tables de la base de données :database_name
-      
-      \x1b[36mPOST /databases/:database_name\x1b[0m
-      Crée une nouvelle table dans la base de données :database_name
-      \x1b[33mCorps de la requête:\x1b[0m { "name": "nom_de_la_table" }
-      
-      \x1b[36mGET /databases/:database_name/:table_name\x1b[0m
-      Liste tous les enregistrements de la table :table_name de la base de données :database_name
-      
-      \x1b[36mPOST /databases/:database_name/:table_name\x1b[0m
-      Crée un nouvel enregistrement dans la table :table_name de la base de données :database_name
-      \x1b[33mCorps de la requête:\x1b[0m { "field1": "valeur1", "field2": "valeur2", ... }
-      
-      \x1b[36mGET /databases/:database_name/:table_name/:id\x1b[0m
-      Récupère l'enregistrement d'ID :id dans la table :table_name de la base de données :database_name
-      
-      \x1b[36mPUT /databases/:database_name/:table_name/:id\x1b[0m
-      Met à jour l'enregistrement d'ID :id dans la table :table_name de la base de données :database_name
-      \x1b[33mCorps de la requête:\x1b[0m { "field1": "nouvelle_valeur1", "field2": "nouvelle_valeur2", ... }
-      
-      \x1b[36mDELETE /databases/:database_name/:table_name/:id\x1b[0m
-      Supprime l'enregistrement d'ID :id dans la table :table_name de la base de données :database_name
-    `;
-
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end(doc);
+    // Redirect to documentation
+    res.writeHead(301, {
+      Location: "https://github.com/FLOKITOTO/SGBD/blob/dev/readme.md",
+    });
+    res.end();
   }
 
   if (req.url === "/") {
     // ROOT du projet
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Hello World!\n");
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(`
+      <html>
+        <body>
+          <h1>Hello World!</h1>
+          <p>Click <a href="/docs">here</a> to go to the documentation.</p>
+          <p>Click <a href="/databases">here</a> to view the list of databases.</p>
+        </body>
+      </html>
+    `);
   } else if (req.url === "/databases") {
     // GET /databases *
     // List databases
@@ -429,7 +401,7 @@ const server = http.createServer((req, res) => {
               });
             }
             // PUT /databases/:database_name/:table_name/:id
-            // Mise à jour d'une donnée
+            // Mise à jour d'une donnée by ID
             else if (req.method === "PUT") {
               let body = "";
               req.on("data", (chunk) => {
@@ -475,7 +447,7 @@ const server = http.createServer((req, res) => {
               });
             }
             // DELETE /databases/:database_name/:table_name/:id
-            // Supprimer une donnée
+            // Supprimer une donnée BY ID
             else if (req.method === "DELETE") {
               const index = table.findIndex((obj) => obj.id === id);
               if (index !== -1) {

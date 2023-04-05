@@ -1,8 +1,8 @@
-# DOCUMENTATION API RESTFUL
+# API RESTFUL DOCUMENTATION
 
-Système simple de base de données (SGBD) en Nodejs sans aucun framework avec des BASES DE DONNEES IN MEMORY ainsi q'un stockage péreen asynchrone, les données ne doivent pas être perdues en cas d'arrêt.
-Le système doit être RESTFUL. Toutes les interactions avec la base de données se font via des appels de web services avec des commandes curl.
-Voici l'organisation des données en base avec des tables et les différents PATH.
+Simple database system (DBMS) in Nodejs without any framework with IN MEMORY DATABASES and asynchronous perennial storage, the data must not be lost in case of shutdown.
+The system must be RESTFUL. All interactions with the database are done via web services calls with curl commands.
+Here is the organization of the data in the database with tables and the different PATH.
 
 ## Sommaire
 
@@ -42,232 +42,566 @@ L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éx
 
 ### **RACINE**
 
+`GET` ROOT **Récupère les accès à databases et help**
+
 ```
 /
 ```
 
-`GET` **Récupère les accès à databases et help**
+Response :
 
-Réponses :
+- `200 OK` : The API root has been reached successfully
+- `404 Not Found` : the API root does not exist
 
-- `200 OK` : la racine de l'API a été atteinte avec succès
-- `404 Not Found` : la racine de l'API n'existe pas
-
-La racine est le point d'entré principal avec comme propositions /databases & /help.
+The root is the main entry point with proposals /databases & /help.
 
 ---
 
 ### AIDE
 
+`GET` **Accéder aux commandes curls**
+
 ```
 /docs
 ```
 
-`GET` **Accéder aux commandes curls**
+Response :
 
-Réponses :
-
-- `200 OK` : la documentation de l'API
-- `404 Not Found` : la documentation de l'API n'existe pas
+- `200 OK` : API documentation
 
 La documentation va détailler l'ensemble des commandes curl disponible.
 
 ---
 
-### ACCES AUX BASES DE DONNÉES
+### ALL ABOUT DATABASES
+
+#### `POST` **CREATE_DATABASE**
+
+This command allows to create a database, with a request body name.
 
 ```
 /databases
+
 ```
-
-`GET` **Lister toutes les bases de données**
-
-Réponses :
-
-- `200 OK` : la liste de toutes les bases de données existantes
-
-Cette commande permet de lister l'ensemble des bases de données disponible.
-
----
-
-`POST` **Créer une BDD**
 
 _BODY REQUEST :_
 
-```
+```json
 {
   "name": ":database_name"
 }
 ```
 
-Réponses :
+Response :
 
-- `201 Created` : la base de données a été créée avec succès
-- `409 Conflict` : la base de données existe déjà
-- `400 Bad Request` : Le corps de la requête est mal formé ou des paramètres obligatoires sont manquants.
+- `201 Created` : Database ${databaseName} created successfully
+- `400 Conflict` : Database '${databaseName}' already exists
+- `400 Bad Request` : "Invalid body. Body should only contain a 'name' property with a value.
 
-Cette commande permet de créer une base de données, avec un corps de requête `name`.
+```json
+{
+  "id": 454201015609267,
+  "message": "Database :database_name created successfully"
+}
+```
+
+```json
+{
+  "error": "Database ':database_name' already exists"
+}
+```
+
+```json
+{
+  "error": "Invalid body. Body should only contain a 'name' property with a value"
+}
+```
 
 ---
 
-### Afficher la backup databases.json
+#### `GET` **LISTS_DATABASES**
+
+This command allows to list all available databases
 
 ```
-/databases/all
+/databases
+```
+
+Response :
+
+- `200 OK` : Success
+
+```json
+{
+  "message": "Lists of databases",
+  "databases": [":database_name"]
+}
+```
+
+```json
+{
+  "message": "No databases found"
+}
 ```
 
 ---
 
-### ACTION DEPUIS UNE BASE DE DONNEES
+#### `DELETE` **DELETE_DATABASE**
+
+This command allows to delete a database.
 
 ```
 /databases/:database_name
 ```
 
-`GET` **Lister toutes les tables d'une BDD**
+Response :
 
-Réponses :
+- `200 OK` : Success
+- `404 Not Found` : Not found
 
-- `200 OK` : la liste de toutes les tables de la base de données spécifiée
-- `404 Not Found` : la base de données n'existe pas
+```json
+{
+  "message": "Database :database_name deleted successfully"
+}
+```
 
-Cette commande permet de lister l'ensemble des des tables d'une base de données.
+```json
+{
+  "message": "Database ':database_name' not found"
+}
+```
 
 ---
 
-`POST` **Créer une table dans une BDD**
+### ALL ABOUT TABLES
+
+#### `POST` **CREATE_TABLE**
+
+This command allows to create a table in a database.
 
 _BODY REQUEST :_
 
-```
+```json
 {
   "name": ":table_name"
 }
 ```
 
-Réponses :
+Responses :
 
-- `201 Created` : la base de données a été créée avec succès
-- `409 Conflict` : la base de données existe déjà
-- `400 Bad Request` : Le corps de la requête est mal formé ou des paramètres obligatoires sont manquants.
+- `201 Created` : Success
+- `409 Conflict` : Already exist
+- `400 Bad Request` : Invalide body
 
-Cette commande permet de créer une table dans une base de données.
-
----
-
-**`DELETE` Supprimer une BDD**
-
-Réponses :
-
-- `200 OK` : la base de données a été supprimée avec succès
-- `404 Not Found` : la base de données n'existe pas
-
-Cette commande permet de supprimer une base de données.
-
-Du point d'une API RESTFUL nous devons supprimer une base de données depuis sa ressource (/databases/:database_name).
-
----
-
-### ACCES AUX DONNEES
-
-```
-/databases/:database_name/:table_name
+```json
+{
+  "message": "Table :table_name created successfully in :database_name"
+}
 ```
 
-`GET` **Lister tous les champs d'une table**
+```json
+{
+  "error": "Table ':table_name' already exists in ':database_name'"
+}
+```
 
-Réponses :
-
-- `200 OK` : La liste de toutes les données de la table
-- `404 Not Found` : La base de données ou la table n'existe pas
-
-Cette commande permet de lister tous les champs d'une table.
+```json
+{
+  "error": "Invalid body. Body should only contain a 'name' property with a value"
+}
+```
 
 ---
 
-`POST` **Insérer des données dans une table**
+#### `GET` **LIST_TABLES_OF_DATABASE**
+
+This command allows to list all tables in a database.
+
+```
+/databases/:database_name
+```
+
+Response :
+
+- `200 OK` : The list of all tables in the specified database
+- `404 Not Found` : No tables found
+- `404 Not Found` : Database found
+
+```json
+{
+  "message": "Liste des tables",
+  "tables": [":table_name"]
+}
+```
+
+```json
+{
+  "message": "No tables found"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+---
+
+#### `DELETE` **DELETE_TABLE**
+
+This command allows you to delete a table from a database.
+
+```
+/databases/:databadse_name/:table_name
+```
+
+Response :
+
+- `200 OK` : Success
+- `404 Not Found` : Table not found
+- `404 Not Found` : Database not found
+
+```json
+{
+  "message": "Table :table_name deleted successfully"
+}
+```
+
+```json
+{
+  "error": "Table :table_name not found in :database_name database"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+### ALL ABOUT DATA'S
+
+#### `POST` **INSERT_DATA_IN_TABLE**
+
+This command allows you to insert data's in table.
+
+```
+
+/databases/:database_name/:table_name/:id
+
+```
 
 _BODY REQUEST_
 
-```
+```json
 {
-  "key": "value",
-  "key": value,
-  "key": "value"
+  "field": "value"
 }
 ```
 
-Réponses :
+Response :
 
-- `201 Created` : Les données ont été insérées avec succèsµ
-- `404 Not Found` : La base de données ou la table n'existe pas
-- `400 Bad Request` : Le corps de la requête est mal formé ou des paramètres obligatoires sont manquants.
+- `201 Created` : Success
+- `400 Bad Request` : Invalid body
+- `404 Not Found` : Database not found
+- `404 Not Found` : Table not found
 
-Cette commande permet d'insérer des données dans une table.
-
----
-
-### ACTION DEPUIS UNE TABLE
-
-```
-/databases/:database_name/:table_name/:id
-```
-
-`PUT` **Mettre à jour une donnée**
-
-```
+```json
 {
-  "key": "value",
-  "key": value,
-  "key": "value"
+  "id": 511101113094438,
+  "message": "Data inserted successfully"
 }
 ```
 
-Réponses :
+```json
+{
+  "error": "Missing parameters"
+}
+```
 
-- `200 OK` : La donnée a été mise à jour avec succès
-- `404 Not Found` : La base de données, la table ou l'identifiant de la donnée n'existe pas
-- `400 Bad Request` : Le corps de la requête est mal formé ou des paramètres obligatoires sont manquants.
+```json
+{
+  "message": "Database not found"
+}
+```
 
-Cette commande permet de mettre à jour des données via un ID.
+```json
+{
+  "error": "Table :table_named not found in :database_name database"
+}
+```
 
 ---
 
-**`DELETE` Supprimer une donnée depuis une table avec un ID:**
+#### `POST` **INSERT_NEW_FIELD_BY_ID**
 
-Réponses :
+This command allows you to insert new field and data via an ID.
 
-- `200 OK` : la donnée a été supprimée avec succès
-- `404 Not Found` : la base de données, la table ou l'identifiant de la donnée n'existent pas
+_BODY REQUEST_
 
-Cette commande permet de supprimer une donnée via une table
+```json
+{
+  "field": ["value", "value1"]
+}
+```
 
----
+Response :
 
-`GET` **Filtrer tous les champs d'une table**
+- `200 OK` : Success
+- `404 Not Found` : ID not found
+- `404 Not Found` : Database not found
+- `404 Not Found` : Table not found
 
-Réponses:
+```json
+{
+  "message": "Data updated successfully",
+  "messages": ["Field 'anotherField' added to row"]
+}
+```
 
-/databases/:database_name/:table_name?{filter_parameter}=value&{filter_parameter}=value&{filter_parameter}=value
+```json
+{
+  "message": "Row with ID not found in table"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+```json
+{
+  "message": "table not found"
+}
+```
+
+#### `PUT` **UPDATE_DATA**
+
+This command allows you to update data by an ID.
+
+_BODY REQUEST_
+
+```json
+{
+  "field": "changevalue"
+}
+```
+
+Response :
+
+- `200 OK` : Success
+- `404 Not Found` : ID not found
+- `404 Not Found` : Database not found
+- `404 Not Found` : Table not found
+
+```json
+{
+  "message": "Data updated successfully"
+}
+```
+
+```json
+{
+  "message": "Row with ID not found in table"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+```json
+{
+  "message": "table not found"
+}
+```
+
+#### `GET` **FILTER_IN_DATA**
+
+This command allows you to filter based on fields and values from a table.
+
+```
+/databases/:database_name/:table_name?{field}{filter_parameter}={value}&{field}{filter_parameter}={value}
+```
 
 Parameters :
-\*\*\_gt** : Greater than
-\*\*\_gte** : Greater than or equal to
-\*\*\_lt** : Less than
-\*\*\_lte** : Less than or equal TO
 
-To write equal : field=value
-exemple : age=21
+`__gt` : **Greater than**
+`__gte` : **Greater than or equal to**
+
+`__lt` : **Less than**
+`__lte` : **Less than or equal TO**
+
+`=` : **To write equal**
+
+Response :
+
+- `200 OK` : Success
+- `404 Not Found` : Database not found
+- `404 Not Found` : Table not found
+
+```json
+{
+  "table_name": ":table_name",
+  "fields": "name, surname, town, age, bank_account, id",
+  "data": [
+    ["Mehdi", "Ferkatou", "Toulouse", 23, 10000, 880506326695218],
+    ["Florian", "Cardinal", "Toulouse", 26, 100000, 109293517097326],
+    ["Paul", "Gautier", "Paris", 24, 10000, 513163051728597]
+  ]
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+```json
+{
+  "message": "table not found"
+}
+```
+
+#### `GET` **LIST_OF_FIELDS_AND_DATAS**
+
+This command allows you to list all fields and data in a table.
+
+```
+
+/databases/:database_name/:table_name
+
+```
+
+Response :
+
+- `200 OK` : Success
+- `404 Not Found` : No data found
+- `404 Not Found` : Database not found
+- `404 Not Found` : Table not found
+
+```json
+{
+  "table_name": ":table_name",
+  "fields": "field, field1, field2, id",
+  "data": [["value", "value", "value", 511101113094438]]
+}
+```
+
+```json
+{
+  "message": "No data found in table :table_name"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+```json
+{
+  "message": "table not found"
+}
+```
+
+---
+
+#### `GET` **LIST_RECORD_BY_ID**
+
+This command allows you to list record by ID.
+
+```
+
+/databases/:database_name/:table_name/:id
+
+```
+
+Response :
+
+- `200 OK` : Success
+- `404 Not Found` : Table not found
+- `404 Not Found` : Database not found
+- `404 Not Found` : Id not found
+
+---
+
+```json
+{
+  "message": "List of fields",
+  "fields": "field, field1, field2, id, anotherField",
+  "data": {
+    "field": "changevalue",
+    "field1": "value",
+    "field2": "value",
+    "id": 596718266852998,
+    "anotherField": "anotherValue"
+  }
+}
+```
+
+```json
+{
+  "message": "Row with ID not found in table"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+```json
+{
+  "message": "table not found"
+}
+```
+
+#### `DELETE` **DELETE_ROW_BY_ID**
+
+This command allows you to delete data via an ID.
+
+Response :
+
+- `200 OK` : Success
+- `404 Not Found` : ID not found
+- `404 Not Found` : Database not found
+- `404 Not Found` : Table not found
+
+```json
+{
+  "message": "Row with ID 596718266852998 deleted successfully",
+  "deleted": 596718266852998
+}
+```
+
+```json
+{
+  "message": "Row with ID not found in table"
+}
+```
+
+```json
+{
+  "message": "Database not found"
+}
+```
+
+```json
+{
+  "message": "table not found"
+}
+```
 
 ## [Sommaire](#sommaire)
-
-## Exemples-dutilisations
-
-Je vais mettre un gif ici
-
-![aperçu](preview.gif)
-
-[Sommaire](#sommaire)
 
 ## Licence
 
