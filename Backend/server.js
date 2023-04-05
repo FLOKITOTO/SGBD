@@ -518,6 +518,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
+// Save databases to file
 function loadDatabases() {
   try {
     const data = fs.readFileSync("./databases.json");
@@ -532,12 +533,14 @@ function loadDatabases() {
       for (const databaseName in databases) {
         console.log(`\x1b[33m${databaseName}:\x1b[0m`);
         for (const tableName in databases[databaseName]) {
-          console.log(`  - \x1b[34m${tableName}:\x1b[0m`);
-          const tableData = databases[databaseName][tableName];
-          if (tableData.length > 0) {
-            console.table(tableData);
-          } else {
-            console.log("    No data found in table.");
+          if (tableName !== "id") {
+            console.log(`  - \x1b[34m${tableName}:\x1b[0m`);
+            const tableData = databases[databaseName][tableName];
+            if (tableData.length > 0) {
+              console.table(tableData);
+            } else {
+              console.log("    No data found in table.");
+            }
           }
         }
       }
@@ -547,8 +550,6 @@ function loadDatabases() {
   }
 }
 
-// REVOIR LA SAUVEGARDE POUR FRAGMENTER LE DATABASES.JSON
-// Save databases to file
 function saveDatabases() {
   try {
     const data = JSON.stringify(databases);
@@ -564,6 +565,3 @@ server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
   loadDatabases();
 });
-
-// exceptions
-// sauvegarde partitionnée
