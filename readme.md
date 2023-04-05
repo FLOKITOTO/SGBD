@@ -17,7 +17,7 @@ Here is the organization of the data in the database with tables and the differe
 
 ## Consignes
 
-Démarrez votre environnement visual studio code, un premier terminal et accéder à la racine http://localhost:3000/. Ensuite vous pouvez créer une base de donnée pour cela effectuer la commande curl -X ### ACCES AUX BASES DE DONNÉES
+Start your visual studio code environment, and run the node server.js project in a terminal and access the root http://localhost:3000/.  To use the requests use postman. 
 
 [Sommaire](#sommaire)
 
@@ -25,7 +25,7 @@ Démarrez votre environnement visual studio code, un premier terminal et accéde
 
 ## Pré-requis
 
-L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éxécution du script.
+The installation of **[NodeJs](https://nodejs.org/en)** is recommended for the execution of the script.
 
 [Sommaire](#sommaire)
 
@@ -40,9 +40,9 @@ L'installation de **[NodeJs](https://nodejs.org/en)** est recommandé pour l'éx
 
 ## Utilisations
 
-### **RACINE**
+### **/**
 
-`GET` ROOT **Récupère les accès à databases et help**
+`GET` ROOT **Retrieves access to databases and docs**
 
 ```
 /
@@ -57,7 +57,7 @@ The root is the main entry point with proposals /databases & /help.
 
 ---
 
-### AIDE
+### **/docs**
 
 `GET` **Accéder aux commandes curls**
 
