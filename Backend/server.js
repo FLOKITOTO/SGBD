@@ -155,16 +155,12 @@ const server = http.createServer((req, res) => {
                   `Table '${tableName}' already exists in '${databaseName}'`
                 );
               }
-              const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
-              databases[databaseName][tableName] = {
-                id: id,
-                data: [],
-              };
+              databases[databaseName][tableName] = [];
+
               saveDatabases(databases);
               res.writeHead(201, { "Content-Type": "application/json" });
               res.end(
                 JSON.stringify({
-                  id: id,
                   message: `Table ${tableName} created successfully in ${databaseName}`,
                 })
               );
