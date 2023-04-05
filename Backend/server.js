@@ -137,11 +137,18 @@ const server = http.createServer((req, res) => {
         // GET /databases/:database_name
         // Listes des tables d'une BDD
         if (req.method === "GET") {
-          // GET /databases/:database_name
-          // Listes des tables d'une BDD
-          const tableList = Object.keys(databases[databaseName]);
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify(tableList));
+          const tableList = Object.keys(databases[databaseName]).filter(
+            (key) => key !== "id"
+          );
+          if (tableList.length === 0) {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ message: "No tables found" }));
+          } else {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({ message: "Liste des tables", tables: tableList })
+            );
+          }
         } else if (req.method === "DELETE") {
           // DELETE /databases/:database_name
           // Supression d'une BDD
@@ -339,8 +346,12 @@ const server = http.createServer((req, res) => {
             // Suppression d'une table
             delete databases[databaseName][tableName];
             saveDatabases(databaseName);
-            res.writeHead(200, { "Content-Type": "text/plain" });
-            res.end(`Table '${tableName}' deleted successfully`);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                message: "Table '${tableName}' deleted successfully",
+              })
+            );
           } else {
             res.writeHead(404, { "Content-Type": "text/plain" });
             res.end("Endpoint not found");
@@ -367,6 +378,7 @@ const server = http.createServer((req, res) => {
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(
                 JSON.stringify({
+                  message: "List of fields",
                   fields: fields,
                   data: row,
                 })
@@ -475,16 +487,28 @@ const server = http.createServer((req, res) => {
                 );
               }
             } else {
-              res.writeHead(404, { "Content-Type": "text/plain" });
-              res.end("Row with ID ${id} not found in table ${tableName}");
+              res.writeHead(404, { "Content-Type": "application/json" });
+
+              res.end(
+                JSON.stringify({
+                  message: "Row with ID ${id} not found in table ${tableName}",
+                })
+              );
             }
           } else {
-            res.writeHead(404, { "Content-Type": "text/plain" });
-            res.end("Row with ID not found in table");
+            res.writeHead(404, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({ message: "Row with ID not found in table" })
+            );
           }
         } else {
-          res.writeHead(404, { "Content-Type": "text/plain" });
-          res.end("Row with ID ${id} not found in table ${tableName}");
+          res.writeHead(404, { "Content-Type": "application/json" });
+
+          res.end(
+            JSON.stringify({
+              message: "table not found",
+            })
+          );
         }
       }
     } else {
