@@ -222,30 +222,30 @@ const server = http.createServer((req, res) => {
             let filteredTable = [...table];
             queries.forEach((query) => {
               const [field, value] = query;
-              if (field.endsWith("_lt")) {
+              if (field.endsWith("__lt")) {
                 // filtrer les valeurs inférieures à la valeur donnée
-                const fieldName = field.replace("_lt", "");
+                const fieldName = field.replace("__lt", "");
                 filteredTable = filteredTable.filter(
                   (obj) =>
                     obj.hasOwnProperty(fieldName) && obj[fieldName] < value
                 );
-              } else if (field.endsWith("_lte")) {
+              } else if (field.endsWith("__lte")) {
                 // filtrer les valeurs inférieures ou égales à la valeur donnée
                 const fieldName = field.replace("_lte", "");
                 filteredTable = filteredTable.filter(
                   (obj) =>
                     obj.hasOwnProperty(fieldName) && obj[fieldName] <= value
                 );
-              } else if (field.endsWith("_gt")) {
+              } else if (field.endsWith("__gt")) {
                 // filtrer les valeurs supérieures à la valeur donnée
                 const fieldName = field.replace("_gt", "");
                 filteredTable = filteredTable.filter(
                   (obj) =>
                     obj.hasOwnProperty(fieldName) && obj[fieldName] > value
                 );
-              } else if (field.endsWith("_gte")) {
+              } else if (field.endsWith("__gte")) {
                 // filtrer les valeurs supérieures ou égales à la valeur donnée
-                const fieldName = field.replace("_gte", "");
+                const fieldName = field.replace("__gte", "");
                 filteredTable = filteredTable.filter(
                   (obj) =>
                     obj.hasOwnProperty(fieldName) && obj[fieldName] >= value
