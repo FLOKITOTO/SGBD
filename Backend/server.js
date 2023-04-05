@@ -75,16 +75,21 @@ const server = http.createServer((req, res) => {
         try {
           const jsonBody = JSON.parse(body);
           const bodyKeys = Object.keys(jsonBody);
-          if (bodyKeys.length !== 1 || !bodyKeys.includes("name")) {
+          if (
+            bodyKeys.length !== 1 ||
+            !bodyKeys.includes("name") ||
+            !jsonBody.name
+          ) {
             throw new Error(
-              "Invalid body. Body should only contain a 'name' property"
+              "Invalid body. Body should only contain a 'name' property with a value"
             );
           }
           const databaseName = jsonBody.name;
           if (databases[databaseName]) {
             throw new Error(`Database '${databaseName}' already exists`);
           }
-          const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+          // const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+          const id = Math.floor(Math.random() * 1000000000000000);
           databases[databaseName] = { id }; // Ajoute l'identifiant à l'objet représentant la base de données
           saveDatabases(databases);
           res.writeHead(201, { "Content-Type": "application/json" });
@@ -104,6 +109,45 @@ const server = http.createServer((req, res) => {
         }
       });
     }
+    // else if (req.method === "POST") {
+    //   // Création BDD
+    //   let body = "";
+    //   req.on("data", (chunk) => {
+    //     body += chunk.toString();
+    //   });
+    //   req.on("end", () => {
+    //     try {
+    //       const jsonBody = JSON.parse(body);
+    //       const bodyKeys = Object.keys(jsonBody);
+    //       if (bodyKeys.length !== 1 || !bodyKeys.includes("name")) {
+    //         throw new Error(
+    //           "Invalid body. Body should only contain a 'name' property"
+    //         );
+    //       }
+    //       const databaseName = jsonBody.name;
+    //       if (databases[databaseName]) {
+    //         throw new Error(`Database '${databaseName}' already exists`);
+    //       }
+    //       const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+    //       databases[databaseName] = { id }; // Ajoute l'identifiant à l'objet représentant la base de données
+    //       saveDatabases(databases);
+    //       res.writeHead(201, { "Content-Type": "application/json" });
+    //       res.end(
+    //         JSON.stringify({
+    //           id: id,
+    //           message: `Database ${databaseName} created successfully`,
+    //         })
+    //       );
+    //     } catch (error) {
+    //       res.writeHead(400, { "Content-Type": "application/json" });
+    //       res.end(
+    //         JSON.stringify({
+    //           error: error.message,
+    //         })
+    //       );
+    //     }
+    //   });
+    // }
   } else if (req.url === "/databases/all") {
     // GET /databases/all
     if (req.method === "GET") {
@@ -116,14 +160,30 @@ const server = http.createServer((req, res) => {
     const databaseName = urlParts[2];
     if (databases[databaseName]) {
       if (urlParts.length === 3) {
+        // if (req.method === "GET") {
+        //   const databaseName = req.url.split("/")[2];
+        //   if (databaseName in databases) {
+        //     // GET /databases/:database_name
+        //     // Listes des tables d'une BDD
+        //     const tableList = Object.keys(databases[databaseName]);
+        //     res.writeHead(200, { "Content-Type": "application/json" });
+        //     res.end(JSON.stringify(tableList));
+        //   } else {
+        //     res.writeHead(404, { "Content-Type": "application/json" });
+        //     res.end(JSON.stringify({ message: "Database not found" }));
+        //   }
+        // }
         if (req.method === "GET") {
           const databaseName = req.url.split("/")[2];
           if (databaseName in databases) {
             // GET /databases/:database_name
             // Listes des tables d'une BDD
-            const tableList = Object.keys(databases[databaseName]);
+            const tableList = Object.keys(databases[databaseName]).filter(
+              (key) => key !== "id"
+            );
+            const response = { tables: tableList };
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(tableList));
+            res.end(JSON.stringify(response));
           } else {
             res.writeHead(404, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ message: "Database not found" }));
@@ -276,7 +336,8 @@ const server = http.createServer((req, res) => {
                   throw new Error("Missing parameters");
                 }
                 const table = databases[databaseName][tableName];
-                const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+                // const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+                const id = Math.floor(Math.random() * 1000000000000000);
 
                 if (row.hasOwnProperty("id")) {
                   // Vérifie si le champ "id" est présent dans le JSON
@@ -338,6 +399,38 @@ const server = http.createServer((req, res) => {
                   data: row,
                 })
               );
+            } else if (req.method === "POST") {
+              // POST /databases/:database_name/:table_name/:id
+              let body = "";
+              req.on("data", (chunk) => {
+                body += chunk.toString();
+              });
+              req.on("end", () => {
+                try {
+                  const newValues = JSON.parse(body);
+                  const keys = Object.keys(newValues);
+                  const table = databases[databaseName][tableName];
+                  const row = table.find((r) => r.id === id);
+                  if (!row) {
+                    throw new Error("Row not found");
+                  }
+                  const messages = []; // tableau pour stocker les messages
+                  keys.forEach((key) => {
+                    row[key] = newValues[key];
+                    messages.push(`Field '${key}' added to row`);
+                  });
+                  saveDatabases(databases); // sauvegarde des modifications dans databases.json
+                  const response = {
+                    message: "Data updated successfully",
+                    messages: messages, // inclure les messages dans la réponse JSON
+                  };
+                  res.writeHead(200, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify(response));
+                } catch (error) {
+                  res.writeHead(400, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ message: error.message }));
+                }
+              });
             } else if (req.method === "PUT") {
               // PUT /databases/:database_name/:table_name/:id
               // Mise à jour d'une donnée
@@ -349,44 +442,73 @@ const server = http.createServer((req, res) => {
                 try {
                   const newValues = JSON.parse(body);
                   const keys = Object.keys(newValues);
+                  const table = databases[databaseName][tableName];
+                  const row = table.find((r) => r.id === id);
+                  if (!row) {
+                    throw new Error("Row not found");
+                  }
+                  const messages = []; // array pour stocker les messages
                   keys.forEach((key) => {
-                    row[key] = newValues[key];
+                    if (row.hasOwnProperty(key)) {
+                      if (newValues[key] === "") {
+                        delete row[key];
+                        messages.push(`Field '${key}' removed by update`);
+                        if (key === "id") {
+                          delete row.id;
+                          messages.push("ID removed by update");
+                        }
+                      } else {
+                        row[key] = newValues[key];
+                      }
+                    } else {
+                      throw new Error(`Field '${key}' not found`);
+                    }
                   });
                   saveDatabases(databases); // Sauvegarde des modifications dans databases.json
+                  const response = { message: "Data updated successfully" };
+                  if (messages.length > 0) {
+                    response.messages = messages; // inclure les messages dans la réponse JSON
+                  }
                   res.writeHead(200, { "Content-Type": "application/json" });
-                  res.end(
-                    JSON.stringify({
-                      message: "Data updated successfully",
-                    })
-                  );
+                  res.end(JSON.stringify(response));
                 } catch (error) {
                   res.writeHead(400, { "Content-Type": "application/json" });
-                  res.end(
-                    JSON.stringify({
-                      error: "Invalid JSON payload",
-                    })
-                  );
+                  res.end(JSON.stringify({ message: error.message }));
                 }
               });
             } else if (req.method === "DELETE") {
               // DELETE /databases/:database_name/:table_name/:id
               // Supprimer une donnée
               const index = table.findIndex((obj) => obj.id === id);
-              table.splice(index, 1);
-              saveDatabases(databaseName);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(table));
+              if (index !== -1) {
+                const deletedRow = table.splice(index, 1)[0];
+                saveDatabases(databaseName);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    message: `Row with ID ${id} deleted successfully`,
+                    deleted: deletedRow.id,
+                  })
+                );
+              } else {
+                res.writeHead(404, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    error: `Row with ID ${id} not found`,
+                  })
+                );
+              }
             } else {
               res.writeHead(404, { "Content-Type": "text/plain" });
-              res.end("Endpoint not found");
+              res.end("Row with ID ${id} not found in table ${tableName}");
             }
           } else {
             res.writeHead(404, { "Content-Type": "text/plain" });
-            res.end("Endpoint not found");
+            res.end("Row with ID not found in table");
           }
         } else {
           res.writeHead(404, { "Content-Type": "text/plain" });
-          res.end("Endpoint not found");
+          res.end("Row with ID ${id} not found in table ${tableName}");
         }
       }
     }
