@@ -226,42 +226,52 @@ const server = http.createServer((req, res) => {
                 // filtrer les valeurs inférieures à la valeur donnée
                 const fieldName = field.replace("_lt", "");
                 filteredTable = filteredTable.filter(
-                  (obj) => obj[fieldName] < value
+                  (obj) =>
+                    obj.hasOwnProperty(fieldName) && obj[fieldName] < value
                 );
               } else if (field.endsWith("_lte")) {
                 // filtrer les valeurs inférieures ou égales à la valeur donnée
                 const fieldName = field.replace("_lte", "");
                 filteredTable = filteredTable.filter(
-                  (obj) => obj[fieldName] <= value
+                  (obj) =>
+                    obj.hasOwnProperty(fieldName) && obj[fieldName] <= value
                 );
               } else if (field.endsWith("_gt")) {
                 // filtrer les valeurs supérieures à la valeur donnée
                 const fieldName = field.replace("_gt", "");
                 filteredTable = filteredTable.filter(
-                  (obj) => obj[fieldName] > value
+                  (obj) =>
+                    obj.hasOwnProperty(fieldName) && obj[fieldName] > value
                 );
               } else if (field.endsWith("_gte")) {
                 // filtrer les valeurs supérieures ou égales à la valeur donnée
                 const fieldName = field.replace("_gte", "");
                 filteredTable = filteredTable.filter(
-                  (obj) => obj[fieldName] >= value
+                  (obj) =>
+                    obj.hasOwnProperty(fieldName) && obj[fieldName] >= value
                 );
               } else {
                 filteredTable = filteredTable.filter(
-                  (obj) => obj[field] == value
+                  (obj) =>
+                    obj.hasOwnProperty(field) && obj[field].toString() === value
                 );
               }
             });
-            const fields = Object.keys(filteredTable[0]).join(", ");
-            const data = filteredTable.map((obj) => Object.values(obj));
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                table_name: tableName,
-                fields: fields,
-                data: data,
-              })
-            );
+            if (filteredTable.length > 0) {
+              const fields = Object.keys(filteredTable[0]).join(", ");
+              const data = filteredTable.map((obj) => Object.values(obj));
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  table_name: tableName,
+                  fields: fields,
+                  data: data,
+                })
+              );
+            } else {
+              res.writeHead(404, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "No matching records found" }));
+            }
           } else {
             // Méthode HTTP non autorisée
             res.writeHead(405, { "Content-Type": "application/json" });
