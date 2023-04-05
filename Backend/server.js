@@ -84,11 +84,13 @@ const server = http.createServer((req, res) => {
           if (databases[databaseName]) {
             throw new Error(`Database '${databaseName}' already exists`);
           }
-          databases[databaseName] = {};
+          const id = crypto.randomBytes(16).toString("hex"); // Génère un identifiant aléatoire de 16 octets en hexadécimal
+          databases[databaseName] = { id }; // Ajoute l'identifiant à l'objet représentant la base de données
           saveDatabases(databases);
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
+              id: id,
               message: `Database ${databaseName} created successfully`,
             })
           );
