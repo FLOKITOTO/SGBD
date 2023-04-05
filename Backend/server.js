@@ -11,11 +11,12 @@ const server = http.createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.url === "/docs") {
-    // Redirect to documentation
-    res.writeHead(301, {
-      Location: "https://github.com/FLOKITOTO/SGBD/blob/dev/readme.md",
-    });
-    res.end();
+    // Documentation API
+    const docLink = "https://github.com/FLOKITOTO/SGBD/blob/dev/readme.md";
+    const docHtml = `<html><body>Documentation: <a href="${docLink}" target="_blank">${docLink}</a></body></html>`;
+
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(docHtml);
   }
 
   if (req.url === "/") {
