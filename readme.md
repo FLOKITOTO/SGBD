@@ -10,7 +10,6 @@ Here is the organization of the data in the database with tables and the differe
 2. [Pré-requis](#pré-requis)
    - [Dépendances](#dépendances)
 3. [Utilisations](#utilisations)
-4. [Exemples d&#39;utilisations](#exemples-dutilisations)
 5. [Licence](#LICENCE)
 
 ---
