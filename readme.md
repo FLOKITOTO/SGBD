@@ -1,28 +1,28 @@
 # API RESTFUL DOCUMENTATION
 
-Simple database system (DBMS) in Nodejs without any framework with IN MEMORY DATABASES and asynchronous perennial storage, the data must not be lost in case of shutdown.
+Simple database system (SGBD) in Nodejs without any framework with IN MEMORY DATABASES and asynchronous perennial storage, the data must not be lost in case of shutdown.
 The system must be RESTFUL. All interactions with the database are done via web services calls with curl commands.
 Here is the organization of the data in the database with tables and the different PATH.
 
-## Sommaire
+## SUMMARY
 
-1. [Consignes](#consignes)
-2. [Pré-requis](#pré-requis)
-   - [Dépendances](#dépendances)
-3. [Utilisations](#utilisations)
-5. [Licence](#LICENCE)
+1. [Instructions](#instructions)
+2. [Prerequisites](#prerequisites)
+   - [Dependencies](#dependencies)
+3. [Uses](#uses)
+4. [Licence](#LICENCE)
 
 ---
 
-## Consignes
+## INSTRUCTIONS
 
-Start your visual studio code environment, and run the node server.js project in a terminal and access the root http://localhost:3000/.  To use the requests use postman. 
+Start your visual studio code environment, and run the node server.js project in a terminal and access the root http://localhost:3000/. To use the requests use postman.
 
 [Sommaire](#sommaire)
 
 ---
 
-## Pré-requis
+## PREREQUISITES
 
 The installation of **[NodeJs](https://nodejs.org/en)** is recommended for the execution of the script.
 
@@ -30,14 +30,14 @@ The installation of **[NodeJs](https://nodejs.org/en)** is recommended for the e
 
 ---
 
-## Dépendances
+## DEPENDENCIES
 
 - [fs](https://nodejs.org/api/fs.html),
 - [http](https://nodejs.org/api/http.html),
 
 [Sommaire](#sommaire)
 
-## Utilisations
+## USES
 
 ### **/**
 
@@ -58,7 +58,7 @@ The root is the main entry point with proposals /databases & /help.
 
 ### **/docs**
 
-`GET` **Accéder aux commandes curls**
+`GET` **ONLINE_DOCUMENTATION**
 
 ```
 /docs
@@ -80,7 +80,6 @@ This command allows to create a database, with a request body name.
 
 ```
 /databases
-
 ```
 
 _BODY REQUEST :_
@@ -177,6 +176,10 @@ Response :
 #### `POST` **CREATE_TABLE**
 
 This command allows to create a table in a database.
+
+```
+/databases/:database_name
+```
 
 _BODY REQUEST :_
 
@@ -286,9 +289,7 @@ Response :
 This command allows you to insert data's in table.
 
 ```
-
 /databases/:database_name/:table_name/:id
-
 ```
 
 _BODY REQUEST_
@@ -337,11 +338,15 @@ Response :
 
 This command allows you to insert new field and data via an ID.
 
+```
+/databases/:database_name/:table_name/:id
+```
+
 _BODY REQUEST_
 
 ```json
 {
-  "field": ["value", "value1"]
+  "new_field": "value"
 }
 ```
 
@@ -381,17 +386,33 @@ Response :
 
 This command allows you to update data by an ID.
 
+You can also delete field
+
+```
+/databases/:database_name/:table_name/:id
+```
+
 _BODY REQUEST_
 
 ```json
 {
-  "field": "changevalue"
+  "exiting_field": "changevalue"
+}
+```
+
+This command also allows deletion by update :
+(You must leave the field empty)
+
+```json
+{
+  "exiting_field": ""
 }
 ```
 
 Response :
 
 - `200 OK` : Success
+- `200 OK` : Success removed by update
 - `404 Not Found` : ID not found
 - `404 Not Found` : Database not found
 - `404 Not Found` : Table not found
@@ -399,6 +420,13 @@ Response :
 ```json
 {
   "message": "Data updated successfully"
+}
+```
+
+```json
+{
+  "message": "Data updated successfully",
+  "messages": ["Field 'town' removed by update"]
 }
 ```
 
@@ -449,8 +477,8 @@ Response :
   "table_name": ":table_name",
   "fields": "name, surname, town, age, bank_account, id",
   "data": [
-    ["Mehdi", "Ferkatou", "Toulouse", 23, 10000, 880506326695218],
-    ["Florian", "Cardinal", "Toulouse", 26, 100000, 109293517097326],
+    ["Mehdi", "Fernand", "Toulouse", 23, 10000, 880506326695218],
+    ["Florian", "Cardon", "Toulouse", 26, 100000, 109293517097326],
     ["Paul", "Gautier", "Paris", 24, 10000, 513163051728597]
   ]
 }
@@ -484,6 +512,7 @@ Response :
 - `404 Not Found` : No data found
 - `404 Not Found` : Database not found
 - `404 Not Found` : Table not found
+-
 
 ```json
 {
@@ -567,6 +596,10 @@ Response :
 #### `DELETE` **DELETE_ROW_BY_ID**
 
 This command allows you to delete data via an ID.
+
+```
+/databases/:database_name/:table_name/:id
+```
 
 Response :
 
